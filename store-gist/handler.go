@@ -2,6 +2,7 @@ package function
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -36,7 +37,15 @@ func Handle(payload []byte) string {
 	defer resp.Body.Close()
 
 	if resp.Status == "201 Created" {
-		return resp.Header.Get("Location")
+		res, getErr := http.Get(resp.Header.Get("Location"))
+		if getErr != nil {
+			fmt.Fprintf(os.Stderr, getErr.Error())
+		}
+
+		bytesOut, _ := ioutil.ReadAll(res.Body)
+		gistResult := GistResult{}
+		json.Unmarshal(bytesOut, &gistResult)
+		return gistResult.HtmlURL
 	}
 
 	resBody, _ := ioutil.ReadAll(resp.Body)
@@ -45,6 +54,10 @@ func Handle(payload []byte) string {
 	os.Exit(1)
 
 	return ""
+}
+
+type GistResult struct {
+	HtmlURL string `json:"html_url"`
 }
 
 func readSecret() string {
