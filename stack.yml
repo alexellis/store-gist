@@ -1,0 +1,12 @@
+provider:
+  name: faas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  store-gist:
+    lang: go
+    handler: ./store-gist
+    image: alexellis/store-gist:0.1
+    secrets:
+      - store-gist
+
