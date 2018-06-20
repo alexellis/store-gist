@@ -12,6 +12,12 @@ import (
 
 // Handle a serverless request
 func Handle(payload []byte) string {
+
+	if os.Getenv("Http_Method") != "POST" {
+		fmt.Fprintf(os.Stderr, "You must post a body to this function.")
+		os.Exit(1)
+	}
+
 	url := "https://api.github.com/gists"
 
 	var jsonStr = []byte(`{
@@ -40,6 +46,7 @@ func Handle(payload []byte) string {
 		res, getErr := http.Get(resp.Header.Get("Location"))
 		if getErr != nil {
 			fmt.Fprintf(os.Stderr, getErr.Error())
+			os.Exit(1)
 		}
 
 		bytesOut, _ := ioutil.ReadAll(res.Body)
