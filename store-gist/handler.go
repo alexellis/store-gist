@@ -39,7 +39,9 @@ func Handle(payload []byte) string {
 		return resp.Header.Get("Location")
 	}
 
-	fmt.Fprintf(os.Stderr, "Couldn't create file")
+	resBody, _ := ioutil.ReadAll(resp.Body)
+
+	fmt.Fprintf(os.Stderr, fmt.Sprintf("Couldn't create file %d %s\n", resp.StatusCode, string(resBody)))
 	os.Exit(1)
 
 	return ""
