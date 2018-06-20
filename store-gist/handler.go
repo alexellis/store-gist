@@ -21,10 +21,10 @@ func Handle(payload []byte) string {
 	url := "https://api.github.com/gists"
 
 	var jsonStr = []byte(`{
-                "description": "` + fmt.Sprintf("A gist of %d bytes", len(payload)) + `",
+                "description": "` + fmt.Sprintf("A gist capturing %d bytes", len(payload)) + `",
                 "public": true,
                 "files": {
-                        "file1.txt": {
+                        "post-body.txt": {
                             "content": "` + string(payload) + `"
                         }
                     }
