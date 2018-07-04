@@ -11,4 +11,3 @@ faas-cli cloud seal --name alexellis-store-gist --literal github-token=$TOKEN --
 Example of posting to Gist adapted from blog post by [Minhazul Haque](https://bits.mdminhazulhaque.io/golang/create-gist-using-go.html)
 
 This could also be achieved by vendoring the following library: https://github.com/google/go-github
-
