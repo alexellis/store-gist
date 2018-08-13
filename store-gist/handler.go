@@ -10,6 +10,16 @@ import (
 	"strings"
 )
 
+type Gist struct {
+	Description string             `json:"description"`
+	Public      bool               `json:"public"`
+	Files       map[string]Content `json:"files"`
+}
+
+type Content struct {
+	Content string `json:"content"`
+}
+
 // Handle a serverless request
 func Handle(payload []byte) string {
 
@@ -20,15 +30,30 @@ func Handle(payload []byte) string {
 
 	url := "https://api.github.com/gists"
 
-	var jsonStr = []byte(`{
-                "description": "` + fmt.Sprintf("Saved %d bytes", len(payload)) + `",
-                "public": true,
-                "files": {
-                        "post-body.txt": {
-                            "content": "` + string(payload) + `"
-                        }
-                    }
-                }`)
+	gist := Gist{
+		Description: fmt.Sprintf("Saved %d bytes", len(payload)),
+		Public:      true,
+		Files: map[string]Content{
+			"post-body.txt": Content{
+				Content: string(payload),
+			},
+		},
+	}
+
+	jsonStr, jerr := json.Marshal(gist)
+	if jerr != nil {
+		return jerr.Error()
+	}
+
+	// var jsonStr = []byte(`{
+	//             "description": "` + fmt.Sprintf("Saved %d bytes", len(payload)) + `",
+	//             "public": true,
+	//             "files": {
+	//                     "post-body.txt": {
+	//                         "content": "` + string(payload) + `"
+	//                     }
+	//                 }
+	//             }`)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Authorization", "token "+readSecret()) // The token
