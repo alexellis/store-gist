@@ -30,11 +30,16 @@ func Handle(payload []byte) string {
 
 	url := "https://api.github.com/gists"
 
+	filename := "post-body.txt"
+	if val, ok := os.LookupEnv("Http_X_Filename"); ok && len(val) > 0 {
+		filename = val
+	}
+
 	gist := Gist{
 		Description: fmt.Sprintf("Saved %d bytes", len(payload)),
 		Public:      true,
 		Files: map[string]Content{
-			"post-body.txt": Content{
+			filename: Content{
 				Content: string(payload),
 			},
 		},
