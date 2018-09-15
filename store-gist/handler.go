@@ -25,15 +25,25 @@ type Content struct {
 func Handle(payload []byte) string {
 
 	if os.Getenv("Http_Method") != "POST" {
-		fmt.Fprintf(os.Stderr, "You must post a body to this function to be stored.")
+		fmt.Fprintf(os.Stderr, `You must post a body to this function to be stored. Use the HTTP header "X-Filename" to override the filename`)
 		os.Exit(1)
 	}
 
 	url := "https://api.github.com/gists"
 
-	filename := "post-body.txt"
+	filename := "body.base64"
 	if val, ok := os.LookupEnv("Http_X_Filename"); ok && len(val) > 0 {
 		filename = val
+	}
+
+	if strings.Contains(filename, "..") {
+		fmt.Fprintf(os.Stderr, `You must not specify a relative path.`)
+		os.Exit(1)
+	}
+
+	if strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
+		fmt.Fprintf(os.Stderr, `You must not specify a path`)
+		os.Exit(1)
 	}
 
 	gist := Gist{
