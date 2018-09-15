@@ -2,6 +2,7 @@ package function
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -36,11 +37,11 @@ func Handle(payload []byte) string {
 	}
 
 	gist := Gist{
-		Description: fmt.Sprintf("Saved %d bytes", len(payload)),
+		Description: fmt.Sprintf("Encoded %d bytes as base64", len(payload)),
 		Public:      true,
 		Files: map[string]Content{
 			filename: Content{
-				Content: string(payload),
+				Content: base64.StdEncoding.EncodeToString(payload),
 			},
 		},
 	}
@@ -49,16 +50,6 @@ func Handle(payload []byte) string {
 	if jerr != nil {
 		return jerr.Error()
 	}
-
-	// var jsonStr = []byte(`{
-	//             "description": "` + fmt.Sprintf("Saved %d bytes", len(payload)) + `",
-	//             "public": true,
-	//             "files": {
-	//                     "post-body.txt": {
-	//                         "content": "` + string(payload) + `"
-	//                     }
-	//                 }
-	//             }`)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Authorization", "token "+readSecret()) // The token
