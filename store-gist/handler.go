@@ -24,7 +24,7 @@ type Content struct {
 func Handle(payload []byte) string {
 
 	if os.Getenv("Http_Method") != "POST" {
-		fmt.Fprintf(os.Stderr, "You must post a body to this function.")
+		fmt.Fprintf(os.Stderr, "You must post a body to this function to be stored.")
 		os.Exit(1)
 	}
 
